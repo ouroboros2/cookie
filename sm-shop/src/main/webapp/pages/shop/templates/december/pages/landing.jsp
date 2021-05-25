@@ -43,21 +43,23 @@ response.setDateHeader ("Expires", -1);
 		</section> 
 		
 		<!-- home page - top category CUSTOM CONTENT in home page -->
-		<c:if test="${page!=null}">
+		<!--<c:if test="${page!=null}"> -->
 			<div class="service-area pt-80">
 				<div class="container">
-	          		<c:out value="${page.description}" escapeXml="false"/>
+	          		<!--<c:out value="${page.description}" escapeXml="false"/>-->
+	          		Featured Item Test
 				</div>
 			</div>
-	    </c:if>
+	    <!--</c:if>-->
 
-	    <c:if test="${requestScope.CONTENT['homeMessage']!=null}">
+	    <!--<c:if test="${requestScope.CONTENT['homeMessage']!=null}">-->
 	    	<div class="service-area pt-80">
 				<div class="container">
 			    	<sm:pageContent contentCode="homeMessage"/>
+			    	Featured Sub heading
 			  	</div>
 			</div>
-		</c:if>
+		<!--</c:if>-->
 
 
 		

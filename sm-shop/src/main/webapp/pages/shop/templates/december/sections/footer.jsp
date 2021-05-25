@@ -115,7 +115,11 @@ response.setDateHeader ("Expires", -1);
 						<div class="footer-wrapper">
 						<c:if test="${requestScope.CONTENT['footerImage']!=null}">
 						<div class="footer-logo">
-							<sm:pageContent contentCode="footerImage"/>
+							<!--<sm:pageContent contentCode="footerImage"/> -->	
+						<p>
+    						<img alt="" src="/static/files/DEFAULT/IMAGE/bag-picture-text_b.png" style="width: 360px; height: 200px;" />
+    					</p> 
+							
 						</div>
 						</c:if>
 						</div>
