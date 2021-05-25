@@ -1,17 +1,19 @@
+
 <%
-response.setCharacterEncoding("UTF-8");
-response.setHeader("Cache-Control","no-cache");
-response.setHeader("Pragma","no-cache");
-response.setDateHeader ("Expires", -1);
+	response.setCharacterEncoding("UTF-8");
+	response.setHeader("Cache-Control", "no-cache");
+	response.setHeader("Pragma", "no-cache");
+	response.setDateHeader("Expires", -1);
 %>
 
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
-<%@ taglib uri="http://www.springframework.org/tags" prefix="s" %>
-<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
-<%@ taglib uri="http://www.springframework.org/security/tags" prefix="sec" %>
-<%@ taglib uri="/WEB-INF/shopizer-tags.tld" prefix="sm" %> 
- 
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
+<%@ taglib uri="http://www.springframework.org/tags" prefix="s"%>
+<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
+<%@ taglib uri="http://www.springframework.org/security/tags"
+	prefix="sec"%>
+<%@ taglib uri="/WEB-INF/shopizer-tags.tld" prefix="sm"%>
+
 <%@page contentType="text/html"%>
 <%@page pageEncoding="UTF-8"%>
 
@@ -19,15 +21,16 @@ response.setDateHeader ("Expires", -1);
 
 
 <!-- overrides with v2 page -->
-<c:set var="creditCardInformationsPage" value="creditCardInformations-v2" scope="request"/>
+<c:set var="creditCardInformationsPage"
+	value="creditCardInformations-v2" scope="request" />
 <!-- generic checkout script -->
 <script src="<c:url value="/resources/js/shop-checkout.js" />"></script>
 
 <!-- 
 Templates definition
  -->
- 
- <!-- subtotals template -->
+
+<!-- subtotals template -->
 <script type="text/html" id="subTotalsTemplate">
 		{{#subTotals}}
 			<tr id="cart-subtotal-{{code}}" class="cart-subtotal subt"> 									
@@ -43,7 +46,7 @@ Templates definition
 		<td><strong><span class="amount grand-total">{{grandTotal}}</td>
 </script>
 
-											
+
 <!-- shipping template -->
 <script type="text/html" id="shippingTemplate">
 			<table id="shippingOptions">
@@ -68,8 +71,8 @@ Templates definition
 			{{/shippingOptions}}
 			</table>						
 </script>
-											
- 
+
+
 <script>
 
 <!-- definitions -->
@@ -559,396 +562,555 @@ function initPayment(paymentSelection) {
 
 </script>
 
-		<!-- page-title-wrapper-end -->
-		<!-- entry-header-area start -->
-		<div class="entry-header-area ptb-40">
-			<div class="container">
-				<div class="row">
-					<div class="col-md-12">
-						<div class="entry-header">
-							<h1 class="entry-title"><s:message code="label.checkout" text="Checkout" /></h1>
-						</div>
-					</div>
+<!-- page-title-wrapper-end -->
+<!-- entry-header-area start -->
+<div class="entry-header-area ptb-40">
+	<div class="container">
+		<div class="row">
+			<div class="col-md-12">
+				<div class="entry-header">
+					<h1 class="entry-title">
+						<s:message code="label.checkout" text="Checkout" />
+					</h1>
 				</div>
 			</div>
 		</div>
-		<!-- entry-header-area end -->
-		<!-- coupon-area start -->
-		<div class="coupon-area">
-			<div class="container">
-				<div class="row">
-					<div class="col-md-12">
-						<div class="coupon-accordion">
-							<!-- ACCORDION START -->
-							<sec:authorize access="!hasRole('AUTH_CUSTOMER') and !fullyAuthenticated">
-								<p class="muted common-row"><a href="<c:url value="/shop/customer/customLogon.html"/>"><s:message code="label.checkout.logon" text="Logon or signup to simplify the online purchase process!"/></a></p>
-							</sec:authorize>					
-						</div>
-					</div>
+	</div>
+</div>
+<!-- entry-header-area end -->
+<!-- coupon-area start -->
+<div class="coupon-area">
+	<div class="container">
+		<div class="row">
+			<div class="col-md-12">
+				<div class="coupon-accordion">
+					<!-- ACCORDION START -->
+					<sec:authorize
+						access="!hasRole('AUTH_CUSTOMER') and !fullyAuthenticated">
+						<p class="muted common-row">
+							<a href="<c:url value="/shop/customer/customLogon.html"/>"><s:message
+									code="label.checkout.logon"
+									text="Logon or signup to simplify the online purchase process!" /></a>
+						</p>
+					</sec:authorize>
 				</div>
 			</div>
 		</div>
-		
+	</div>
+</div>
 
-		
-		<!-- coupon-area end -->		
-		<!-- checkout-area start -->
-		<div class="checkout-area pb-50">
-			<div class="container">
-				<div class="row">
-				
-				
-					<!-- If error messages -->
-					<div id="checkoutError"  class="<c:if test="${errorMessages!=null}">alert  alert-error alert-danger </c:if>">
-						<c:if test="${errorMessages!=null}">
-						<c:out value="${errorMessages}" />
+
+
+<!-- coupon-area end -->
+<!-- checkout-area start -->
+<div class="checkout-area pb-50">
+	<div class="container">
+		<div class="row">
+
+
+			<!-- If error messages -->
+			<div id="checkoutError"
+				class="<c:if test="${errorMessages!=null}">alert  alert-error alert-danger </c:if>">
+				<c:if test="${errorMessages!=null}">
+					<c:out value="${errorMessages}" />
+				</c:if>
+			</div>
+			<!--alert-error-->
+
+			<c:set var="commitUrl"
+				value="${pageContext.request.contextPath}/shop/order/commitOrder.html" />
+			<form:form id="checkoutForm" method="POST"
+				enctype="multipart/form-data" modelAttribute="order"
+				action="${commitUrl}">
+				<input type="hidden" id="useDistanceWindow" name="useDistanceWindow"
+					value="<c:out value="${shippingMetaData.useDistanceModule}"/>">
+				<div class="col-lg-6 col-md-6">
+					<div class="checkbox-form">
+						<h3>
+							<s:message code="label.customer.billinginformation"
+								text="Billing information" />
+						</h3>
+						<div class="row">
+							<div class="col-md-6">
+								<div class="checkout-form-list">
+									<label><s:message code="label.generic.firstname"
+											text="First Name" /><span class="required">*</span></label>
+									<s:message code="NotEmpty.customer.firstName"
+										text="First name is required" var="msgFirstName" />
+									<form:input id="customer.firstName" cssClass="required"
+										path="customer.billing.firstName" autofocus="autofocus"
+										title="${msgFirstName}" />
+									<form:errors path="customer.billing.firstName" cssClass="error" />
+									<span id="error-customer.billing.firstName" class="error"></span>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="checkout-form-list">
+									<label><s:message code="label.generic.lastname"
+											text="Last Name" /><span class="required">*</span></label>
+									<s:message code="NotEmpty.customer.lastName"
+										text="Last name is required" var="msgLastName" />
+									<form:input id="customer.lastName" cssClass="required"
+										maxlength="32" path="customer.billing.lastName"
+										title="${msgLastName}" />
+									<form:errors path="customer.billing.lastName" cssClass="error" />
+									<span id="error-customer.billing.lastName" class="error"></span>
+								</div>
+							</div>
+							<div class="col-md-12">
+								<div class="checkout-form-list">
+									<label><s:message code="label.customer.billing.company"
+											text="Billing company" /></label>
+									<form:input id="customer.billing.company" cssClass=""
+										path="customer.billing.company" />
+									<form:errors path="customer.billing.company" cssClass="error" />
+									<span id="error-customer.billing.company" class="error"></span>
+								</div>
+							</div>
+							<c:if test="${googleMapsKey != ''}">
+								<!-- geolocate component -->
+								<div class="col-md-12">
+									<div class="checkout-form-list">
+
+										<input id="addressAutocomplete"
+											placeholder="<s:message code="message.address.enter" text="Enter your address"/>"
+											class="required" onFocus="geolocate()" type="text" />
+									</div>
+								</div>
+							</c:if>
+							<div class="col-md-12">
+								<div class="checkout-form-list">
+									<label><s:message code="label.generic.streetaddress"
+											text="Street address" /> <span class="required">*</span></label>
+									<s:message code="NotEmpty.customer.billing.address"
+										text="Address is required" var="msgAddress" />
+									<form:input id="customer.billing.address"
+										cssClass="${cssClass}" path="customer.billing.address"
+										title="${msgAddress}" disabled="${fieldDisabled}" />
+									<!-- geo locate -->
+									<form:errors path="customer.billing.address" cssClass="error" />
+									<span id="error-customer.billing.address" class="error"></span>
+								</div>
+							</div>
+							<div class="col-md-12">
+								<div class="checkout-form-list">
+									<label><s:message code="label.generic.city" text="City" />
+										<span class="required">*</span></label>
+									<s:message code="NotEmpty.customer.billing.city"
+										text="City is required" var="msgCity" />
+									<form:input id="customer.billing.city" cssClass="${cssClass}"
+										path="customer.billing.city" title="${msgCity}"
+										disabled="${fieldDisabled}" />
+									<form:errors path="customer.billing.city" cssClass="error" />
+									<span id="error-customer.billing.city" class="error"></span>
+								</div>
+							</div>
+							<div class="col-md-12">
+								<div class="country-select">
+									<label><s:message code="label.generic.country"
+											text="Country" /> <span class="required">*</span></label>
+									<form:select cssClass="billing-country-list"
+										path="customer.billing.country"
+										style="background-color: rgb(255, 255, 255);">
+										<form:options items="${countries}" itemValue="isoCode"
+											itemLabel="name" />
+									</form:select>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="checkout-form-list zone-select">
+									<label><s:message code="label.generic.stateprovince"
+											text="State / Province" /> <span class="required">*</span></label>
+									<form:select cssClass="zone-list" id="billingStateList"
+										path="customer.billing.zone" />
+									<s:message code="NotEmpty.customer.billing.stateProvince"
+										text="State / Province is required" var="msgStateProvince" />
+									<form:input class="${cssClass}" id="billingStateProvince"
+										maxlength="100" name="billingStateProvince"
+										path="customer.billing.stateProvince"
+										title="${msgStateProvince}" disabled="${fieldDisabled}" />
+									<form:errors path="customer.billing.stateProvince"
+										cssClass="error" />
+									<span id="error-customer.billing.stateProvince" class="error"></span>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="checkout-form-list">
+									<label><s:message code="label.generic.postalcode"
+											text="Postal code" /> <span class="required">*</span></label>
+									<s:message code="NotEmpty.customer.billing.postalCode"
+										text="Postal code is required" var="msgPostalCode" />
+									<form:input id="billingPostalCode"
+										cssClass="${cssClass} billing-postalCode"
+										path="customer.billing.postalCode" title="${msgPostalCode}" />
+									<form:errors path="customer.billing.postalCode"
+										cssClass="error" />
+									<span id="error-customer.billing.postalCode" class="error"></span>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="checkout-form-list">
+									<label><s:message code="label.generic.email"
+											text="Email address" /> <span class="required">*</span></label>
+									<s:message code="NotEmpty.customer.emailAddress"
+										text="Email address is required" var="msgEmail" />
+									<form:input id="customer.emailAddress" cssClass="required"
+										path="customer.emailAddress" title="${msgEmail}" />
+									<form:errors path="customer.emailAddress" cssClass="error" />
+									<span id="error-customer.emailAddress" class="error"></span>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="checkout-form-list">
+									<label><s:message code="label.generic.phone"
+											text="Phone number" /> <span class="required">*</span></label>
+									<s:message code="NotEmpty.customer.billing.phone"
+										text="Phone number is required" var="msgPhone" />
+									<form:input id="customer.billing.phone" cssClass="required"
+										path="customer.billing.phone" title="${msgPhone}" />
+									<form:errors path="customer.billing.phone" cssClass="error" />
+									<span id="error-customer.billing.phone" class="error"></span>
+								</div>
+							</div>
+							<sec:authorize
+								access="!hasRole('AUTH_CUSTOMER') and !fullyAuthenticated">
+								<div class="col-md-12">
+									<div class="checkout-form-list create-acc">
+										<input id="cbox" type="checkbox" /> <label><s:message
+												code="label.customer.createaccount"
+												text="Create an account?" /></label>
+									</div>
+									<div id="cbox_info" class="checkout-form-list create-account">
+										<p>
+											<s:message code="label.customer.createaccount.text"
+												text="Create an account by entering the information below. If you are a returning customer please login using the link at the top of the page." />
+										</p>
+										<s:message code="message.password.required"
+											text="Password is required" var="msgPassword" />
+										<label><s:message
+												code="label.customer.accountpassword"
+												text="Account password" /> <span class="required">*</span></label>
+										<form:input id="customer.password" cssClass="required"
+											path="customer.password" title="${msgPassword}" />
+									</div>
+								</div>
+							</sec:authorize>
+						</div>
+						<c:if test="${shippingQuote!=null}">
+							<div class="different-address">
+								<div class="ship-different-title">
+									<h3>
+										<label><s:message
+												code="label.customer.shipping.shipdifferentaddress"
+												text="Ship to a different address?" /></label>
+										<form:checkbox path="shipToDeliveryAddress"
+											id="shipToDeliveryAddress" />
+									</h3>
+								</div>
+								<div id="ship-box-info" class="row">
+									<div class="col-md-6">
+										<div class="checkout-form-list">
+											<label><s:message
+													code="label.customer.shipping.firstname"
+													text="Shipping first name" /> <span class="required">*</span></label>
+											<s:message code="NotEmpty.customer.shipping.firstName"
+												text="Shipping first name should not be empty"
+												var="msgShippingFirstName" />
+											<form:input id="customer.delivery.name" cssClass="required"
+												path="customer.delivery.firstName"
+												title="${msgShippingFirstName}" />
+										</div>
+									</div>
+									<div class="col-md-6">
+										<div class="checkout-form-list">
+											<label><s:message
+													code="label.customer.shipping.lastname"
+													text="Shipping last name" /> <span class="required">*</span></label>
+											<s:message code="NotEmpty.customer.shipping.lastName"
+												text="Shipping last name should not be empty"
+												var="msgShippingLastName" />
+											<form:input id="customer.delivery.name" cssClass="required"
+												path="customer.delivery.lastName"
+												title="${msgShippingLastName}" />
+										</div>
+									</div>
+									<div class="col-md-12">
+										<div class="checkout-form-list">
+											<label><s:message
+													code="label.customer.shipping.company"
+													text="Shipping company" /></label>
+											<form:input id="customer.delivery.company" cssClass=""
+												path="customer.delivery.company" />
+										</div>
+									</div>
+									<!-- geo locate -->
+									<div class="col-md-12">
+										<div class="checkout-form-list">
+											<label><s:message
+													code="label.customer.shipping.streetaddress"
+													text="Shipping street address" /> <span class="required">*</span></label>
+											<s:message code="NotEmpty.customer.shipping.address"
+												text="Shipping street address should not be empty"
+												var="msgShippingAddress" />
+											<form:input id="customer.delivery.address"
+												cssClass="required" path="customer.delivery.address"
+												title="${msgShippingAddress}" />
+										</div>
+									</div>
+									<div class="col-md-12">
+										<div class="checkout-form-list">
+											<label><s:message code="label.customer.shipping.city"
+													text="Shipping city" /> <span class="required">*</span></label>
+											<s:message code="NotEmpty.customer.shipping.city"
+												text="Shipping city should not be empty"
+												var="msgShippingCity" />
+											<form:input id="customer.delivery.city" cssClass="required"
+												path="customer.delivery.city" title="${msgShippingCity}" />
+										</div>
+									</div>
+									<div class="col-md-12">
+										<div class="country-select">
+											<label><s:message
+													code="label.customer.shipping.country"
+													text="Shipping country" /> <span class="required">*</span></label>
+											<form:select cssClass="shipping-country-list"
+												path="customer.delivery.country">
+												<form:options items="${countries}" itemValue="isoCode"
+													itemLabel="name" />
+											</form:select>
+										</div>
+									</div>
+									<div class="col-md-6">
+										<div class="checkout-form-list zone-select">
+											<label><s:message code="label.customer.shipping.zone"
+													text="Shipping state / province" /> <span class="required">*</span></label>
+											<form:select cssClass="zone-list" id="deliveryStateList"
+												path="customer.delivery.zone" />
+											<s:message code="NotEmpty.customer.shipping.stateProvince"
+												text="Shipping State / Province is required"
+												var="msgShippingState" />
+											<form:input class="required" id="deliveryStateProvince"
+												maxlength="100" name="shippingStateProvince"
+												path="customer.delivery.stateProvince"
+												title="${msgShippingState}" />
+										</div>
+									</div>
+									<div class="col-md-6">
+										<div class="checkout-form-list">
+											<label><s:message
+													code="label.customer.shipping.postalcode"
+													text="Shipping postal code" /> <span class="required">*</span></label>
+											<s:message code="NotEmpty.customer.shipping.postalCode"
+												text="Shipping postal code should not be empty"
+												var="msgShippingPostal" />
+											<form:input id="deliveryPostalCode"
+												cssClass="required delivery-postalCode"
+												path="customer.delivery.postalCode"
+												title="${msgShippingPostal}" />
+										</div>
+									</div>
+
+								</div>
+								<div class="order-notes">
+									<div class="checkout-form-list">
+										<label><s:message code="label.order.notes"
+												text="Order notes" /></label>
+										<s:message code="label.order.notes.eg"
+											text="Notes for the order or delivery" var="msgNotes" />
+										<form:textarea id="comments" cols="30" rows="10"
+											path="comments" placeholder="${msgNotes}" />
+									</div>
+								</div>
+							</div>
 						</c:if>
 					</div>
-					<!--alert-error-->
-				
-   					<c:set var="commitUrl" value="${pageContext.request.contextPath}/shop/order/commitOrder.html"/>
-   					<form:form id="checkoutForm" method="POST" enctype="multipart/form-data" modelAttribute="order" action="${commitUrl}">
-						<input type="hidden" id="useDistanceWindow" name="useDistanceWindow" value="<c:out value="${shippingMetaData.useDistanceModule}"/>">
-						<div class="col-lg-6 col-md-6">
-							<div class="checkbox-form">						
-								<h3><s:message code="label.customer.billinginformation" text="Billing information"/></h3>
-								<div class="row">
-									<div class="col-md-6">
-										<div class="checkout-form-list">
-											<label><s:message code="label.generic.firstname" text="First Name"/><span class="required">*</span></label>										
-											<s:message code="NotEmpty.customer.firstName" text="First name is required" var="msgFirstName"/>
-											<form:input id="customer.firstName" cssClass="required" path="customer.billing.firstName" autofocus="autofocus" title="${msgFirstName}"/>
-											<form:errors path="customer.billing.firstName" cssClass="error" />
-										    <span id="error-customer.billing.firstName" class="error"></span>
-										</div>
-									</div>
-									<div class="col-md-6">
-										<div class="checkout-form-list">
-											<label><s:message code="label.generic.lastname" text="Last Name"/><span class="required">*</span></label>										
-										    <s:message code="NotEmpty.customer.lastName" text="Last name is required" var="msgLastName"/>
-										    <form:input id="customer.lastName" cssClass="required"  maxlength="32" path="customer.billing.lastName" title="${msgLastName}" />
-										    <form:errors path="customer.billing.lastName" cssClass="error" />
-										    <span id="error-customer.billing.lastName" class="error"></span>
-										</div>
-									</div>
-									<div class="col-md-12">
-										<div class="checkout-form-list">
-											<label><s:message code="label.customer.billing.company" text="Billing company"/></label>
-										    <form:input id="customer.billing.company" cssClass="" path="customer.billing.company"/>
-										    <form:errors path="customer.billing.company" cssClass="error" />
-											<span id="error-customer.billing.company" class="error"></span>
-										</div>
-									</div>
-									<c:if test="${googleMapsKey != ''}">
-									<!-- geolocate component -->
-									<div class="col-md-12">
-										<div class="checkout-form-list">
-										    
-										      <input id="addressAutocomplete"
-										             placeholder="<s:message code="message.address.enter" text="Enter your address"/>"
-										             class="required"
-										             onFocus="geolocate()"
-										             type="text"/>
-										</div>
-									</div>
-									</c:if>
-									<div class="col-md-12">
-										<div class="checkout-form-list">
-											<label><s:message code="label.generic.streetaddress" text="Street address"/> <span class="required">*</span></label>
-										    <s:message code="NotEmpty.customer.billing.address" text="Address is required" var="msgAddress"/>
-										    <form:input id="customer.billing.address" cssClass="${cssClass}" path="customer.billing.address" title="${msgAddress}" disabled="${fieldDisabled}"/><!-- geo locate -->
-										    <form:errors path="customer.billing.address" cssClass="error" />
-										    <span id="error-customer.billing.address" class="error"></span>
-										</div>
-									</div>
-									<div class="col-md-12">
-										<div class="checkout-form-list">
-											<label><s:message code="label.generic.city" text="City"/> <span class="required">*</span></label>
-											<s:message code="NotEmpty.customer.billing.city" text="City is required" var="msgCity"/>
-											<form:input id="customer.billing.city" cssClass="${cssClass}" path="customer.billing.city" title="${msgCity}" disabled="${fieldDisabled}"/>
-											<form:errors path="customer.billing.city" cssClass="error" />
-										    <span id="error-customer.billing.city" class="error"></span>
-										</div>
-									</div>
-									<div class="col-md-12">
-										<div class="country-select">
-											<label><s:message code="label.generic.country" text="Country"/> <span class="required">*</span></label>
-										    <form:select cssClass="billing-country-list" path="customer.billing.country" style="background-color: rgb(255, 255, 255);">
-											  	<form:options items="${countries}" itemValue="isoCode" itemLabel="name"/>
-										     </form:select>										
-										</div>
-									</div>
-									<div class="col-md-6">
-										<div class="checkout-form-list zone-select">
-											<label><s:message code="label.generic.stateprovince" text="State / Province"/> <span class="required">*</span></label>										
-											<form:select cssClass="zone-list" id="billingStateList" path="customer.billing.zone"/>
-											<s:message code="NotEmpty.customer.billing.stateProvince" text="State / Province is required" var="msgStateProvince"/>
-											<form:input  class="${cssClass}" id="billingStateProvince"  maxlength="100" name="billingStateProvince" path="customer.billing.stateProvince" title="${msgStateProvince}" disabled="${fieldDisabled}"/>
-											<form:errors path="customer.billing.stateProvince" cssClass="error" />
-											<span id="error-customer.billing.stateProvince" class="error"></span>
-										</div>
-									</div>
-									<div class="col-md-6">
-										<div class="checkout-form-list">
-											<label><s:message code="label.generic.postalcode" text="Postal code"/> <span class="required">*</span></label>										
-											<s:message code="NotEmpty.customer.billing.postalCode" text="Postal code is required" var="msgPostalCode"/>
-											<form:input id="billingPostalCode" cssClass="${cssClass} billing-postalCode" path="customer.billing.postalCode" title="${msgPostalCode}"/>
-											<form:errors path="customer.billing.postalCode" cssClass="error" />
-											<span id="error-customer.billing.postalCode" class="error"></span>
-										</div>
-									</div>
-									<div class="col-md-6">
-										<div class="checkout-form-list">
-											<label><s:message code="label.generic.email" text="Email address"/> <span class="required">*</span></label>										
-											<s:message code="NotEmpty.customer.emailAddress" text="Email address is required" var="msgEmail"/> 
-										    <form:input id="customer.emailAddress" cssClass="required" path="customer.emailAddress" title="${msgEmail}"/>
-										    <form:errors path="customer.emailAddress" cssClass="error" />
-											<span id="error-customer.emailAddress" class="error"></span>
-										</div>
-									</div>
-									<div class="col-md-6">
-										<div class="checkout-form-list">
-											<label><s:message code="label.generic.phone" text="Phone number"/>  <span class="required">*</span></label>										
-											<s:message code="NotEmpty.customer.billing.phone" text="Phone number is required" var="msgPhone"/>
-										    <form:input id="customer.billing.phone" cssClass="required" path="customer.billing.phone" title="${msgPhone}"/>
-										    <form:errors path="customer.billing.phone" cssClass="error" />
-											<span id="error-customer.billing.phone" class="error"></span>
-										</div>
-									</div>
-									<sec:authorize access="!hasRole('AUTH_CUSTOMER') and !fullyAuthenticated">
-									<div class="col-md-12">
-										<div class="checkout-form-list create-acc">	
-											<input id="cbox" type="checkbox" />
-											<label><s:message code="label.customer.createaccount" text="Create an account?"/></label>
-										</div>
-										<div id="cbox_info" class="checkout-form-list create-account">
-											<p><s:message code="label.customer.createaccount.text" text="Create an account by entering the information below. If you are a returning customer please login using the link at the top of the page."/></p>
-											<s:message code="message.password.required" text="Password is required" var="msgPassword"/>
-											<label><s:message code="label.customer.accountpassword" text="Account password"/>  <span class="required">*</span></label>
-											<form:input id="customer.password" cssClass="required" path="customer.password" title="${msgPassword}"/>	
-										</div>
-									</div>								
-									</sec:authorize>
-								</div>
-								<c:if test="${shippingQuote!=null}">
-								<div class="different-address">
-										<div class="ship-different-title">
-											<h3>
-												<label><s:message code="label.customer.shipping.shipdifferentaddress" text="Ship to a different address?"/></label>
-												<form:checkbox path="shipToDeliveryAddress" id="shipToDeliveryAddress"/>
-											</h3>
-										</div>
-									<div id="ship-box-info" class="row">
-										<div class="col-md-6">
-											<div class="checkout-form-list">
-												<label><s:message code="label.customer.shipping.firstname" text="Shipping first name"/> <span class="required">*</span></label>										
-												<s:message code="NotEmpty.customer.shipping.firstName" text="Shipping first name should not be empty" var="msgShippingFirstName"/>
-									      		<form:input id="customer.delivery.name" cssClass="required" path="customer.delivery.firstName" title="${msgShippingFirstName}"/>
-											</div>
-										</div>
-										<div class="col-md-6">
-											<div class="checkout-form-list">
-												<label><s:message code="label.customer.shipping.lastname" text="Shipping last name"/> <span class="required">*</span></label>										
-												<s:message code="NotEmpty.customer.shipping.lastName" text="Shipping last name should not be empty" var="msgShippingLastName"/>
-									      		<form:input id="customer.delivery.name" cssClass="required" path="customer.delivery.lastName" title="${msgShippingLastName}"/>
-											</div>
-										</div>
-										<div class="col-md-12">
-											<div class="checkout-form-list">
-												<label><s:message code="label.customer.shipping.company" text="Shipping company"/></label>
-												<form:input id="customer.delivery.company" cssClass="" path="customer.delivery.company"/>
-											</div>
-										</div>
-										<!-- geo locate -->
-										<div class="col-md-12">
-											<div class="checkout-form-list">
-												<label><s:message code="label.customer.shipping.streetaddress" text="Shipping street address"/> <span class="required">*</span></label>
-												<s:message code="NotEmpty.customer.shipping.address" text="Shipping street address should not be empty" var="msgShippingAddress"/>
-										      	<form:input id="customer.delivery.address" cssClass="required" path="customer.delivery.address" title="${msgShippingAddress}"/>
-											</div>
-										</div>
-										<div class="col-md-12">
-											<div class="checkout-form-list">
-												<label><s:message code="label.customer.shipping.city" text="Shipping city"/> <span class="required">*</span></label>
-												<s:message code="NotEmpty.customer.shipping.city" text="Shipping city should not be empty" var="msgShippingCity"/> 
-											    <form:input id="customer.delivery.city" cssClass="required" path="customer.delivery.city" title="${msgShippingCity}"/>
-											</div>
-										</div>
-									<div class="col-md-12">
-										<div class="country-select">
-											<label><s:message code="label.customer.shipping.country" text="Shipping country"/> <span class="required">*</span></label>	
-										     <form:select cssClass="shipping-country-list" path="customer.delivery.country">
-											  	<form:options items="${countries}" itemValue="isoCode" itemLabel="name"/>
-										     </form:select>									
-										</div>
-									</div>
-									<div class="col-md-6">
-										<div class="checkout-form-list zone-select">
-											<label><s:message code="label.customer.shipping.zone" text="Shipping state / province"/> <span class="required">*</span></label>										
-											<form:select cssClass="zone-list" id="deliveryStateList" path="customer.delivery.zone"/>
-											<s:message code="NotEmpty.customer.shipping.stateProvince" text="Shipping State / Province is required" var="msgShippingState"/>
-											<form:input  class="required" id="deliveryStateProvince"  maxlength="100" name="shippingStateProvince" path="customer.delivery.stateProvince" title="${msgShippingState}"/>
-										</div>
-									</div>
-									<div class="col-md-6">
-											<div class="checkout-form-list">
-												<label><s:message code="label.customer.shipping.postalcode" text="Shipping postal code"/> <span class="required">*</span></label>										
-												<s:message code="NotEmpty.customer.shipping.postalCode" text="Shipping postal code should not be empty" var="msgShippingPostal"/>
-											    <form:input id="deliveryPostalCode" cssClass="required delivery-postalCode" path="customer.delivery.postalCode" title="${msgShippingPostal}"/>
-											</div>
-									</div>
-								
-								</div>
-									<div class="order-notes">
-										<div class="checkout-form-list">
-											<label><s:message code="label.order.notes" text="Order notes"/></label>
-											<s:message code="label.order.notes.eg" text="Notes for the order or delivery" var="msgNotes"/>
-											<form:textarea id="comments" cols="30" rows="10" path="comments" placeholder="${msgNotes}" />
-										</div>									
-									</div>
-								</div>
-								</c:if>													
-							</div>
-						</div>	
-						<div class="col-lg-6 col-md-6">
-							<div class="your-order">
-								<h3><s:message code="label.order.summary" text="Order summary" /></h3>
-								<div class="your-order-table table-responsive">
-									<table id="summary-table"><!-- requires summary-table -->
-										<thead>
-											<tr>
-												<th class="product-name"><s:message code="label.order.item" text="Item" /></th>
-												<th class="product-total"><s:message code="label.order.total" text="Total" /></th>
-											</tr>							
-										</thead>
-										<tbody id="summaryRows">
-											<c:forEach items="${cart.shoppingCartItems}" var="shoppingCartItem">
-											<tr class="cart_item">
-												<td class="product-name">
-													${shoppingCartItem.name} <strong class="product-quantity"> x ${shoppingCartItem.quantity}</strong>
-													<c:if test="${fn:length(shoppingCartItem.shoppingCartAttributes)>0}">
-													<br/>
-														<ul>
-														<c:forEach items="${shoppingCartItem.shoppingCartAttributes}" var="option">
-															<li>${option.optionName} - ${option.optionValue}</li>
+				</div>
+				<div class="col-lg-6 col-md-6">
+					<div class="your-order">
+						<h3>
+							<s:message code="label.order.summary" text="Order summary" />
+						</h3>
+						<div class="your-order-table table-responsive">
+							<table id="summary-table">
+								<!-- requires summary-table -->
+								<thead>
+									<tr>
+										<th class="product-name"><s:message
+												code="label.order.item" text="Item" /></th>
+										<th class="product-total"><s:message
+												code="label.order.total" text="Total" /></th>
+									</tr>
+								</thead>
+								<tbody id="summaryRows">
+									<c:forEach items="${cart.shoppingCartItems}"
+										var="shoppingCartItem">
+										<tr class="cart_item">
+											<td class="product-name">${shoppingCartItem.name} <strong
+												class="product-quantity"> x
+													${shoppingCartItem.quantity}</strong> <c:if
+													test="${fn:length(shoppingCartItem.shoppingCartAttributes)>0}">
+													<br />
+													<ul>
+														<c:forEach
+															items="${shoppingCartItem.shoppingCartAttributes}"
+															var="option">
+															<li>${option.optionName}- ${option.optionValue}</li>
 														</c:forEach>
-														</ul>
-													</c:if>
-												</td>
-												<td class="product-total">
-													<span class="amount">${shoppingCartItem.subTotal}</span>
-												</td>
-											</tr>
-											</c:forEach>
-										</tbody>
-										<tfoot>
-											<!-- subtotals -->
-											<c:forEach items="${order.orderTotalSummary.totals}" var="total">
-												<c:if test="${total.orderTotalCode!='order.total.total'}">
-												<tr id="cart-subtotal-${total.orderTotalCode}" class="cart-subtotal subt"> 
-														<td class="order-total-label">
-														<c:choose>
-																<c:when test="${total.orderTotalCode=='order.total.discount'}">
-																<s:message code="label.generic.rebate" text="Rebate"/>&nbsp;-&nbsp;<s:message code="${total.text}" text="${total.text}"/>
-																</c:when>
-																<c:otherwise>
-																	<s:message code="${total.orderTotalCode}" text="${total.orderTotalCode}"/>
-																</c:otherwise>
-														</c:choose>
-														</td> 
-														<td><strong><c:choose><c:when test="${total.orderTotalCode=='order.total.discount'}"><font color="red">- <sm:monetary value="${total.value}" /></span></c:when><c:otherwise><sm:monetary value="${total.value}" /></c:otherwise></c:choose></strong></td> 
-												</tr> 
+													</ul>
 												</c:if>
-											</c:forEach>
-											
-											<!-- Shipping box THIS IS ALL BROKEN -->
-											<c:if test="${shippingQuote!=null}">
-											<tr class="shipping">
-												<td class="order-total-label" style="border:none !important;">
-													<s:message code="label.shipping.fees" text="Shipping fees" />
-													<input type="hidden" id="shippingModule" name="shippingModule" value="${shippingQuote.shippingModuleCode}">
-												</td>
-												<td id="shippingSection" style="border:none !important;">
-													<c:choose>
-								        			<c:when test="${fn:length(shippingQuote.shippingOptions)>0}">
-								       				<c:if test="${shippingQuote.shippingReturnCode=='NO_POSTAL_CODE'}">
-							 							<br/>
-							 							<font color="orange"><s:message code="label.shipping.nopostalcode" text="A shipping quote will be available after filling the postal code"/></font>
-							 							<br/><br/>
-							 						</c:if>	
-													<table id="shippingOptions">
-														<c:forEach items="${shippingQuote.shippingOptions}" var="option" varStatus="status">
-															<tr>
-															<td style="border: none !important;">
-															<input type="radio" name="selectedShippingOption.optionId" class="shippingOption" code="${option.shippingModuleCode}" id="${option.optionId}" value="${option.optionId}" <c:if test="${shippingQuote.selectedShippingOption!=null && shippingQuote.selectedShippingOption.optionId==option.optionId}">checked="checked"</c:if>>
-															</td>
-															<td style="border: none !important;">
-															<label>
-																<s:message code="module.shipping.${option.shippingModuleCode}" arguments="${requestScope.MERCHANT_STORE.storename}" text="${option.shippingModuleCode}"/>: <span class="amount">${option.optionPriceText}</span>
-															</label>
-															</td>
-															</tr>
-															<c:if test="${option.note!=null}">
-															<tr>
-																<td colspan="2" style="border: none !important;"><span><small><c:out value="${option.note}"/></small></span></td>
-															</tr>
-															</c:if>
-														</c:forEach>
-													</table>						 													        			
-								        			</c:when>
-								        			<c:otherwise>
-														<c:choose>
-								       						<c:when test="${shippingQuote.freeShipping==true && shippingQuote.freeShippingAmount!=null}" >
-								       							<s:message code="label.shipping.freeshipping.over" text="Free shipping for orders over"/>&nbsp;<strong><sm:monetary value="${shippingQuote.freeShippingAmount}"/></strong>
-								       						</c:when>
-								       						<c:otherwise>
-										       				<c:choose>
-										       				  <c:when test="${shippingQuote.shippingReturnCode=='ERROR'}">
-										       					<font color="red"><c:out value="${shippingQuote.quoteError}" /></font>
-										       				  </c:when>
-										       				  <c:otherwise>
-										       					<c:choose>
-											       					<c:when test="${shippingQuote.shippingReturnCode=='NO_SHIPPING_MODULE_CONFIGURED'}">
-											       						<font color="red"><s:message code="message.noshipping.configured" text="No shipping method configured"/></font>
-											       					</c:when>
-											       					<c:otherwise>
-											       						<c:choose>
-											       							<c:when test="${shippingQuote.shippingReturnCode=='NO_POSTAL_CODE'}">
-											       								<div id="shippingSection" class="control-group"> 
-											       								<strong>
-											       									<font color="orange"><s:message code="label.shipping.nopostalcode" text="A shipping quote will be available after filling the postal code"/></font>
-											       								</strong>
-											       								</div>
-											       							</c:when>
-											       							<c:otherwise>
-											       								<strong><s:message code="label.shipping.freeshipping" text="Free shipping!"/></strong>
-											       							</c:otherwise>
-											       						</c:choose>
-											       					</c:otherwise>
-										       					</c:choose>
-										       				  </c:otherwise>
-										       				</c:choose>
-								       					  </c:otherwise>
-								       					</c:choose>
-													</c:otherwise>
-								        			</c:choose>
-												</td>
+											</td>
+											<td class="product-total"><span class="amount">${shoppingCartItem.subTotal}</span>
+											</td>
+										</tr>
+									</c:forEach>
+								</tbody>
+								<tfoot>
+									<!-- subtotals -->
+									<c:forEach items="${order.orderTotalSummary.totals}"
+										var="total">
+										<c:if test="${total.orderTotalCode!='order.total.total'}">
+											<tr id="cart-subtotal-${total.orderTotalCode}"
+												class="cart-subtotal subt">
+												<td class="order-total-label"><c:choose>
+														<c:when
+															test="${total.orderTotalCode=='order.total.discount'}">
+															<s:message code="label.generic.rebate" text="Rebate" />&nbsp;-&nbsp;<s:message
+																code="${total.text}" text="${total.text}" />
+														</c:when>
+														<c:otherwise>
+															<s:message code="${total.orderTotalCode}"
+																text="${total.orderTotalCode}" />
+														</c:otherwise>
+													</c:choose></td>
+												<td><strong><c:choose>
+															<c:when
+																test="${total.orderTotalCode=='order.total.discount'}">
+																<font color="red">- <sm:monetary
+																		value="${total.value}" /></span>
+															</c:when>
+															<c:otherwise>
+																<sm:monetary value="${total.value}" />
+															</c:otherwise>
+														</c:choose></strong></td>
 											</tr>
-											<tr class="shipping">
+										</c:if>
+									</c:forEach>
+
+									<!-- Shipping box THIS IS ALL BROKEN -->
+									<c:if test="${shippingQuote!=null}">
+										<tr class="shipping">
+											<td class="order-total-label"
+												style="border: none !important;"><s:message
+													code="label.shipping.fees" text="Shipping fees" /> <input
+												type="hidden" id="shippingModule" name="shippingModule"
+												value="${shippingQuote.shippingModuleCode}"></td>
+											<td id="shippingSection" style="border: none !important;">
+												<c:choose>
+													<c:when
+														test="${fn:length(shippingQuote.shippingOptions)>0}">
+														<c:if
+															test="${shippingQuote.shippingReturnCode=='NO_POSTAL_CODE'}">
+															<br />
+															<font color="orange"><s:message
+																	code="label.shipping.nopostalcode"
+																	text="A shipping quote will be available after filling the postal code" /></font>
+															<br />
+															<br />
+														</c:if>
+														<table id="shippingOptions">
+															<c:forEach items="${shippingQuote.shippingOptions}"
+																var="option" varStatus="status">
+																<tr>
+																	<td style="border: none !important;"><input
+																		type="radio" name="selectedShippingOption.optionId"
+																		class="shippingOption"
+																		code="${option.shippingModuleCode}"
+																		id="${option.optionId}" value="${option.optionId}"
+																		<c:if test="${shippingQuote.selectedShippingOption!=null && shippingQuote.selectedShippingOption.optionId==option.optionId}">checked="checked"</c:if>>
+																	</td>
+																	<td style="border: none !important;"><label>
+																			<s:message
+																				code="module.shipping.${option.shippingModuleCode}"
+																				arguments="${requestScope.MERCHANT_STORE.storename}"
+																				text="${option.shippingModuleCode}" />: <span
+																			class="amount">${option.optionPriceText}</span>
+																	</label></td>
+																</tr>
+																<c:if test="${option.note!=null}">
+																	<tr>
+																		<td colspan="2" style="border: none !important;"><span><small><c:out
+																						value="${option.note}" /></small></span></td>
+																	</tr>
+																</c:if>
+															</c:forEach>
+														</table>
+													</c:when>
+													<c:otherwise>
+														<c:choose>
+															<c:when
+																test="${shippingQuote.freeShipping==true && shippingQuote.freeShippingAmount!=null}">
+																<s:message code="label.shipping.freeshipping.over"
+																	text="Free shipping for orders over" />&nbsp;<strong><sm:monetary
+																		value="${shippingQuote.freeShippingAmount}" /></strong>
+															</c:when>
+															<c:otherwise>
+																<c:choose>
+																	<c:when
+																		test="${shippingQuote.shippingReturnCode=='ERROR'}">
+																		<font color="red"><c:out
+																				value="${shippingQuote.quoteError}" /></font>
+																	</c:when>
+																	<c:otherwise>
+																		<c:choose>
+																			<c:when
+																				test="${shippingQuote.shippingReturnCode=='NO_SHIPPING_MODULE_CONFIGURED'}">
+																				<font color="red"><s:message
+																						code="message.noshipping.configured"
+																						text="No shipping method configured" /></font>
+																			</c:when>
+																			<c:otherwise>
+																				<c:choose>
+																					<c:when
+																						test="${shippingQuote.shippingReturnCode=='NO_POSTAL_CODE'}">
+																						<div id="shippingSection" class="control-group">
+																							<strong> <font color="orange"><s:message
+																										code="label.shipping.nopostalcode"
+																										text="A shipping quote will be available after filling the postal code" /></font>
+																							</strong>
+																						</div>
+																					</c:when>
+																					<c:otherwise>
+																						<strong><s:message
+																								code="label.shipping.freeshipping"
+																								text="Free shipping!" /></strong>
+																					</c:otherwise>
+																				</c:choose>
+																			</c:otherwise>
+																		</c:choose>
+																	</c:otherwise>
+																</c:choose>
+															</c:otherwise>
+														</c:choose>
+													</c:otherwise>
+												</c:choose>
+											</td>
+										</tr>
+										<tr class="shipping">
 											<td colspan="2">
 												<!-- Confirm address box box -->
-												<div id="confirmShippingAddress" style="height:250px;"></div>
+												<div id="confirmShippingAddress" style="height: 250px;"></div>
 											</td>
-											</tr>
-											</c:if>
-											
-											<tr id="totalRow" class="total-box order-total">
-												<th><s:message code="order.total.total" text="Total"/></th>
-												<td><strong><span class="amount grand-total"><sm:monetary value="${order.orderTotalSummary.total}"/></td>
-											</tr>						
-										</tfoot>
-									</table>
-								</div>
+										</tr>
+									</c:if>
+
+									<tr id="totalRow" class="total-box order-total">
+										<th><s:message code="order.total.total" text="Total" /></th>
+										<td><strong><span class="amount grand-total"><sm:monetary
+														value="${order.orderTotalSummary.total}" /></td>
+									</tr>
+								</tfoot>
+							</table>
+						</div>
 						<!-- Payments -->
 						<c:if test="${fn:length(paymentMethods)>0}">
 							<div class="payment-method">
@@ -961,72 +1123,160 @@ function initPayment(paymentSelection) {
 											class="paymentMethodSelected"
 											name="${paymentMethod.paymentMethodCode}"
 											aria-controls="#${paymentMethod.paymentType}" role="tab"
-											data-toggle="tab"> 
+											data-toggle="tab">
 
-														<h5>
-															<s:message
-																code="payment.type.${paymentMethod.paymentType}"
-																text="Payment method type [payment.type.${paymentMethod.paymentType}] not defined in payment.properties" />
-														</h5>
+												<h5>
+													<s:message code="payment.type.${paymentMethod.paymentType}"
+														text="Payment method type [payment.type.${paymentMethod.paymentType}] not defined in payment.properties" />
+												</h5>
 
 										</a>
 										</li>
 
 									</c:forEach>
+									<li role="presentation"><a href="#gcash"
+										class="paymentMethodSelected" name="gcash"
+										aria-controls="gcash" role="tab" data-toggle="tab">
+											<h5>Gcash</h5>
+									</a></li>
+									<li role="presentation"><a href="#creditCard"
+										class="paymentMethodSelected" name="creditCard"
+										aria-controls="creditCard" role="tab" data-toggle="tab">
+											<h5>Credit Card</h5>
+									</a></li>
+
 								</ul>
 								<!--  redit card https://codepen.io/llgruff/pen/JdyJWR -->
 								<div class="v-margin20">
-								
-								
-								<div class="tab-content">
-																
-											<c:forEach items="${paymentMethods}" var="paymentMethod">
-												<div
-													class="payment-tab tab-pane <c:choose><c:when test="${order.paymentMethodType!=null && order.paymentMethodType==paymentMethod.paymentType}">active</c:when><c:otherwise><c:if test="${order.paymentMethodType==null && paymentMethod.defaultSelected==true}">active</c:if></c:otherwise></c:choose>"
-													id="${paymentMethod.paymentType}">
-													<c:choose>
-														<c:when
-															test="${order.paymentMethodType!=null && order.paymentMethodType==paymentMethod.paymentType}">
+
+
+									<div class="tab-content">
+
+										<c:forEach items="${paymentMethods}" var="paymentMethod">
+											<div
+												class="payment-tab tab-pane <c:choose><c:when test="${order.paymentMethodType!=null && order.paymentMethodType==paymentMethod.paymentType}">active</c:when><c:otherwise><c:if test="${order.paymentMethodType==null && paymentMethod.defaultSelected==true}">active</c:if></c:otherwise></c:choose>"
+												id="${paymentMethod.paymentType}">
+												<c:choose>
+													<c:when
+														test="${order.paymentMethodType!=null && order.paymentMethodType==paymentMethod.paymentType}">
+														<c:set var="paymentModule"
+															value="${order.paymentMethodType}" scope="request" />
+													</c:when>
+													<c:otherwise>
+														<c:if
+															test="${order.paymentMethodType==null && paymentMethod.defaultSelected==true}">
 															<c:set var="paymentModule"
-																value="${order.paymentMethodType}" scope="request" />
-														</c:when>
-														<c:otherwise>
-															<c:if
-																test="${order.paymentMethodType==null && paymentMethod.defaultSelected==true}">
-																<c:set var="paymentModule"
-																	value="${paymentMethod.paymentMethodCode}"
-																	scope="request" />
-															</c:if>
-														</c:otherwise>
-													</c:choose>
-													<c:set var="selectedPaymentMethod"
-														value="${order.paymentMethodType}" scope="request" />
-													<c:set var="paymentMethod" value="${paymentMethod}"
-														scope="request" />
+																value="${paymentMethod.paymentMethodCode}"
+																scope="request" />
+														</c:if>
+													</c:otherwise>
+												</c:choose>
+												<c:set var="selectedPaymentMethod"
+													value="${order.paymentMethodType}" scope="request" />
+												<c:set var="paymentMethod" value="${paymentMethod}"
+													scope="request" />
 
-													<!-- exception for stripe, braintree... which has it's own page -->
-													<c:choose>
-														<c:when
-															test="${(paymentMethod.paymentMethodCode=='stripe') or (paymentMethod.paymentMethodCode=='braintree') or (paymentMethod.paymentMethodCode=='stripe3')}">
-															<c:set var="pageName"
-																value="${fn:toLowerCase(paymentMethod.paymentMethodCode)}" />
-														</c:when>
-														<c:otherwise>
-															<c:set var="pageName"
-																value="${fn:toLowerCase(paymentMethod.paymentType)}" />
-														</c:otherwise>
-													</c:choose>
-													<jsp:include
-														page="/pages/shop/common/checkout/${pageName}.jsp" />
+												<!-- exception for stripe, braintree... which has it's own page -->
+												<c:choose>
+													<c:when
+														test="${(paymentMethod.paymentMethodCode=='stripe') or (paymentMethod.paymentMethodCode=='braintree') or (paymentMethod.paymentMethodCode=='stripe3')}">
+														<c:set var="pageName"
+															value="${fn:toLowerCase(paymentMethod.paymentMethodCode)}" />
+													</c:when>
+													<c:otherwise>
+														<c:set var="pageName"
+															value="${fn:toLowerCase(paymentMethod.paymentType)}" />
+													</c:otherwise>
+												</c:choose>
+												<jsp:include
+													page="/pages/shop/common/checkout/${pageName}.jsp" />
 
-												</div>
-											</c:forEach>
-											<!-- values set by javascript -->
-											<input type="hidden" id="paymentMethodType" name="paymentMethodType" value="<c:if test="${order.paymentMethodType!=null}"><c:out value="${order.paymentMethodType}"/></c:if>" />
-											<input type="hidden" id="paymentModule" name="paymentModule"
-												value="<c:choose><c:when test="${order.paymentModule!=null}"><c:out value="${order.paymentModule}"/></c:when><c:otherwise><c:out value="${paymentModule}" /></c:otherwise></c:choose>" />
+											</div>
+										</c:forEach>
+
+										<div class="payment-tab tab-pane" id="gcash">
+											<div class="control-group">
+												<label class="control-label">GCash</label>
+												<div class="controls"></div>
+											</div>
+
+											<div class="control-group payment-method-box">
+												You can also pay thru our GCash Channel<br>
+												<p>09266195414</p>
+												<p>Ay Cookie Mo</p>
+												<br/>
+												<p>Want to use Grab, Angkas, or Lalamove for your delivery?</p>
+												<br/>
+												<p>Use the <i>store pick up option</i></p>
+												<br/>
+												<p>We process the order by batch on Tuesdays and Saturdays</p>
+												<p>Delivery fee is paid by customer booked thru Grab,Lalamove, or Angkas</p>
+												<p>Message us for coordination, here or on our Instagram @aycookiemo</p>
+											</div>
 										</div>
-								
+
+										<div class="payment-tab tab-pane" id="creditCard">
+											<div class="control-group">
+												<label class="control-label">Visa/Mastercard</label>
+												<div class="controls"></div>
+											</div>
+
+											<div class="control-group payment-method-box">
+												<form>
+												
+													<div class="form-group">
+														<label for="exampleInputEmail1">Card Number</label> <input
+															type="email" class="form-control" id="exampleInputEmail1"
+															aria-describedby="emailHelp" placeholder="Enter Card Number">
+													</div>
+													
+													<div class="form-group">
+														<label for="exampleInputEmail1">CardHolder Name</label> <input
+															class="form-control" id="exampleInputEmail1"
+															aria-describedby="emailHelp">
+													</div>
+													
+													<div class="form-group">
+														<label for="exampleInputEmail1">Expiration Date</label> <input
+															class="form-control" id="exampleInputEmail1"
+															aria-describedby="emailHelp">
+													</div>
+													
+													<div class="form-group">
+														<label for="exampleInputEmail1">Security Code</label> <input
+															class="form-control" id="exampleInputEmail1"
+															aria-describedby="emailHelp">
+													</div>
+													
+													<div class="form-group">
+														<label for="exampleInputEmail1">Billing Address</label> <input
+															class="form-control" id="exampleInputEmail1"
+															aria-describedby="emailHelp">
+													</div>
+													
+													<div class="form-group">
+														<label for="exampleInputEmail1">Zip/Postal Code</label> <input
+															class="form-control" id="exampleInputEmail1"
+															aria-describedby="emailHelp">
+													</div>
+												
+													<div class="form-group">
+														<label for="exampleInputEmail1">Email address</label> <input
+															type="email" class="form-control" id="exampleInputEmail1"
+															aria-describedby="emailHelp" placeholder="Enter email">
+													</div>
+												</form>
+											</div>
+										</div>
+
+										<!-- values set by javascript -->
+										<input type="hidden" id="paymentMethodType"
+											name="paymentMethodType"
+											value="<c:if test="${order.paymentMethodType!=null}"><c:out value="${order.paymentMethodType}"/></c:if>" />
+										<input type="hidden" id="paymentModule" name="paymentModule"
+											value="<c:choose><c:when test="${order.paymentModule!=null}"><c:out value="${order.paymentModule}"/></c:when><c:otherwise><c:out value="${paymentModule}" /></c:otherwise></c:choose>" />
+									</div>
+
 								</div>
 
 								<c:if
@@ -1057,34 +1307,35 @@ function initPayment(paymentSelection) {
 										</div>
 									</div>
 								</c:if>
-								
+
 								<div id="formErrorMessage" class="alert"></div>
 								<div class="order-button-payment">
-												<button id="submitOrder" type="button" class=" 
-												<c:if test="${errorMessages!=null}"> btn-disabled</c:if>" 
-												<c:if test="${errorMessages!=null}"> disabled="true"</c:if>
-												><s:message code="button.label.submitorder" text="Submit order"/>
-												</button>
-			
-												<!-- submit can be a post or a pre ajax query -->
+									<button id="submitOrder" type="button"
+										class=" 
+												<c:if test="${errorMessages!=null}"> btn-disabled</c:if>"
+										<c:if test="${errorMessages!=null}"> disabled="true"</c:if>>
+										<s:message code="button.label.submitorder" text="Submit order" />
+									</button>
+
+									<!-- submit can be a post or a pre ajax query -->
 								</div>
 							</div>
 						</c:if>
 					</div>
-						</div>
-					</form:form>
 				</div>
-			</div>
+			</form:form>
 		</div>
-		<!-- checkout-area end -->
-		
-		<!-- maps and geoloc, places -->
-		<c:if test="${googleMapsKey != ''}">
-		<script src="<c:url value="/resources/js/address-autocomplete.js" />"></script>
-		</c:if>
-		
-		<!-- maps api -->
-		<script>
+	</div>
+</div>
+<!-- checkout-area end -->
+
+<!-- maps and geoloc, places -->
+<c:if test="${googleMapsKey != ''}">
+	<script src="<c:url value="/resources/js/address-autocomplete.js" />"></script>
+</c:if>
+
+<!-- maps api -->
+<script>
 		
 			function googleInitialize() {
 				initAutocomplete();
@@ -1094,8 +1345,9 @@ function initPayment(paymentSelection) {
 			}
 		
 		</script>
-		
-		<c:if test="${googleMapsKey != ''}">
-		  	  <script src="https://maps.googleapis.com/maps/api/js?key=<c:out value="${googleMapsKey}"/>&libraries=places&callback=googleInitialize"
-		        async defer></script>
-		</c:if>
+
+<c:if test="${googleMapsKey != ''}">
+	<script
+		src="https://maps.googleapis.com/maps/api/js?key=<c:out value="${googleMapsKey}"/>&libraries=places&callback=googleInitialize"
+		async defer></script>
+</c:if>
