@@ -26,14 +26,21 @@ response.setDateHeader ("Expires", -1);
 
         <!-- home banner -->
         <!-- slider-area-start -->
-		<c:choose>
+		<!--<c:choose>
 		<c:when test="${requestScope.CONTENT['bannerImage']!=null}">
 			<sm:pageContent contentCode="bannerImage"/>
 		</c:when>
 		<c:otherwise>
 		</c:otherwise>
-		</c:choose>
-
+		</c:choose>-->
+		
+		<section id="home-banner" style="margin-top:0px !important;">
+    	<article>
+        	<div class="image-content">
+            	<img alt="text" src="/static/files/DEFAULT/IMAGE/banner-resized_b.jpeg" />
+         	</div>
+   	     </article>
+		</section> 
 		
 		<!-- home page - top category CUSTOM CONTENT in home page -->
 		<c:if test="${page!=null}">
